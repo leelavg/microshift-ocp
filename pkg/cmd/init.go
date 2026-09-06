@@ -58,6 +58,24 @@ func initCerts(cfg *config.Config) (*certchains.CertificateChains, error) {
 	return certChains, nil
 }
 
+func initWorkerCerts(cfg *config.Config) error {
+	certsDir := cryptomaterial.CertsDirectory(config.DataDir)
+	_, err := certchains.NewCertificateSigner(
+		"kube-csr-signer",
+		cryptomaterial.CSRSignerCertDir(certsDir),
+		cryptomaterial.ShortLivedCertificateValidity,
+	).WithServingCertificates(
+		&certchains.ServingCertificateSigningRequestInfo{
+			CSRMeta: certchains.CSRMeta{
+				Name:     "kubelet-server",
+				Validity: cryptomaterial.ShortLivedCertificateValidity,
+			},
+			Hostnames: []string{cfg.Node.HostnameOverride, cfg.Node.NodeIP},
+		},
+	).Complete()
+	return err
+}
+
 func certSetup(cfg *config.Config) (*certchains.CertificateChains, error) {
 	builder, err := certificateChainsSetup(cfg, config.DataDir)
 	if err != nil {
