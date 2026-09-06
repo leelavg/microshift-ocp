@@ -100,7 +100,7 @@ spec:
         - mountPath: /entrypoint
           name: cni-binary-copy
         - name: system-cni-dir
-          mountPath: /host/etc/cni/net.d
+          mountPath: /host/etc/cni
         - name: cnibin
           mountPath: /host/run/cni/bin
         env:
@@ -112,7 +112,7 @@ spec:
       volumes:
         - name: system-cni-dir
           hostPath:
-            path: "/etc/cni/net.d"
+            path: "/etc/cni"
             type: Directory
         - name: cnibin
           hostPath:
